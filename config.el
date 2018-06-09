@@ -1,4 +1,3 @@
-
 (global-set-key (kbd "C-x g o") 'mode-line-other-buffer)
 
 ;  (global-set-key "Alt_L" . "Super")
@@ -8,7 +7,7 @@
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
-(global-set-key (kbd "<C-s-return>") 'ansi-term)
+(global-set-key (kbd "<s-return>") 'ansi-term)
 
 (global-set-key (kbd "C-x b") 'ibuffer)
 
@@ -57,6 +56,11 @@
   (balance-windows)
   (other-window 1))
 
+(add-to-list 'display-buffer-alist
+             '("*Apropos*" display-buffer-same-window))
+(add-to-list 'display-buffer-alist
+             '("*Help*" display-buffer-same-window))
+
 (defun kill-current-buffer ()
   (interactive)
   (kill-buffer (current-buffer)))
@@ -65,11 +69,14 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
+(setq lisp-indent-function 'common-lisp-indent-function
+      inferior-lisp-program "sbcl")
+
 (global-set-key (kbd "s-c") 'compile)
 
 (setq-default c-basic-offset 4
               tab-width 4
-              indent-tabs-mode t)
+              indent-tabs-mode nil)
 ;(setq tab-width 4
 ;      indent-tabs-mode t
 ;      c-default-style "k&r")
@@ -157,8 +164,13 @@
 
 ;; (use-package slime ; may want to install via other means
   ;; :ensure t)
-(setq inferior-lisp-program "/usr/bin/sbcl")
+
 (setq slime-contribs '(slime-fancy))
+
+;; (use-package slime-company
+  ;; :ensure t)
+
+;; (slime-setup '(slime-company))
 
 ;; (use-package geiser
 ;;   :ensure t)
@@ -183,10 +195,12 @@
 (use-package stumpwm-mode
   :ensure t)
 
-(use-package smart-tabs-mode
-  :ensure t
-  :init
-  (setq smart-tabs-mode 1))
+;; (use-package smart-tabs-mode
+;;   :ensure t
+;;   :init
+;;   (setq smart-tabs-mode 1)
+;;   :config
+;;   (smart-tabs-insinuate 'c 'c++ 'lisp 'python))
 
 (use-package magit
   :ensure t
@@ -233,9 +247,9 @@
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'geiser-repl-mode 'rainbow-delimiters-mode))
 
-(use-package sudo-edit
-  :ensure t
-  :bind ("C-c s" . sudo-edit))
+;; (use-package sudo-edit
+;;   :ensure t
+;;   :bind ("C-c s" . sudo-edit))
 
 (use-package dashboard
   :ensure t
@@ -249,9 +263,9 @@
 (use-package company
   :ensure t
   :config
-  (setq company-idle-delay 0)
+  (setq company-idle-delay 1)
   :init
-  (add-hook 'after-init-hook 'global-company-mode))
+  (add-hook 'after-init-hook 'company-mode))
 
 (with-eval-after-load 'company
     (define-key company-active-map (kbd "M-n") nil)
@@ -343,6 +357,9 @@
 ;  ( org-src-tab-acts-natively t)
 
 (add-to-list 'org-structure-template-alist
+             '("l" "#+BEGIN_SRC lisp\n?\n#+END_SRC"))
+
+(add-to-list 'org-structure-template-alist
              '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
 
 (add-to-list 'org-structure-template-alist
@@ -357,8 +374,18 @@
 (add-to-list 'org-structure-template-alist
              '("cpp" "#+BEGIN_SRC cpp\n?\n#+END_SRC"))
 
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((lisp . t)
+   (python . t)))
+(defun my-org-confirm-babel-evaluate (lang body)
+  (not (string= lang "lisp")))  ; don't ask for listed languages
+(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate) ;; overwrite default
+
 ;; (add-hook 'org-mode-hook '(lambda () (visual-line-mode)))
 
 (add-to-list 'org-agenda-files (expand-file-name "~/orgfiles"))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
+
+(global-set-key (kbd "s-s") 'slime-selector)
