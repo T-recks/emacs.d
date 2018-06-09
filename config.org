@@ -404,7 +404,7 @@ Attempting to start a geiser REPL at this point will throw an error:
 ** modeline
 *** powerline
 #+BEGIN_SRC emacs-lisp
-  (powerline-vim-theme)
+  (powerline-center-theme)
 #+END_SRC
 *** spaceline
 #+BEGIN_SRC emacs-lisp
