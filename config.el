@@ -69,8 +69,7 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
-(setq lisp-indent-function 'common-lisp-indent-function
-      inferior-lisp-program "sbcl")
+(setq inferior-lisp-program "sbcl")
 
 (global-set-key (kbd "s-c") 'compile)
 
@@ -152,28 +151,17 @@
 (setq display-time-24hr-format t)
 (display-time-mode 1)
 
+(use-package smart-tabs-mode
+  :ensure t
+  :init
+  (setq smart-tabs-mode 1)
+  :config
+  (smart-tabs-insinuate 'c 'c++ 'python))
+
 (use-package ido-completing-read+
   :ensure t
   :config
   (ido-ubiquitous-mode 1))
-
-(use-package guix
-  :ensure t
-  :config
-  (setq global-guix-prettify-mode t))
-
-;; (use-package slime ; may want to install via other means
-  ;; :ensure t)
-
-(setq slime-contribs '(slime-fancy))
-
-;; (use-package slime-company
-  ;; :ensure t)
-
-;; (slime-setup '(slime-company))
-
-;; (use-package geiser
-;;   :ensure t)
 
 (use-package expand-region
   :ensure t
@@ -194,13 +182,6 @@
 
 (use-package stumpwm-mode
   :ensure t)
-
-;; (use-package smart-tabs-mode
-;;   :ensure t
-;;   :init
-;;   (setq smart-tabs-mode 1)
-;;   :config
-;;   (smart-tabs-insinuate 'c 'c++ 'lisp 'python))
 
 (use-package magit
   :ensure t
@@ -247,9 +228,8 @@
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'geiser-repl-mode 'rainbow-delimiters-mode))
 
-;; (use-package sudo-edit
-;;   :ensure t
-;;   :bind ("C-c s" . sudo-edit))
+(use-package sudo-edit
+  :ensure t)
 
 (use-package dashboard
   :ensure t
@@ -273,14 +253,10 @@
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-p") #'company-select-previous))
 
-(powerline-center-theme)
-
-;; (use-package spaceline
-;;   :ensure t
-;;   :config
-;;   (require 'spaceline-config)
-;;   (setq powerline-default-separator (quote arrow))
-;;   (spaceline-spacemacs-theme))
+(use-package powerline
+  :ensure t
+  :init
+  (powerline-center-theme))
 
 (use-package diminish
   :ensure t
@@ -315,6 +291,26 @@
   :ensure t
   :init
   (projectile-mode 1))
+
+;; (use-package spaceline
+;;   :ensure t
+;;   :config
+;;   (require 'spaceline-config)
+;;   (setq powerline-default-separator (quote arrow))
+;;   (spaceline-spacemacs-theme))
+
+;; (use-package slime
+  ;; :ensure t)
+
+;; (use-package slime-company
+  ;; :ensure t)
+
+;; (slime-setup '(slime-company))
+
+;; (use-package guix
+  ;; :ensure t
+  ;; :config
+  ;; (setq global-guix-prettify-mode t))
 
 ;; (use-package ido-vertical-mode ; disabled b/c of performance with ido-ubiquitous
 ;;   :ensure t
@@ -389,3 +385,4 @@
 (add-hook 'org-mode-hook 'org-indent-mode)
 
 (global-set-key (kbd "s-s") 'slime-selector)
+(setq slime-contribs '(slime-fancy))

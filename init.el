@@ -34,7 +34,7 @@
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
  '(cursor-color "#cccccc")
- '(custom-enabled-themes (quote (solarized-dark)))
+ '(custom-enabled-themes (quote (solarized-light)))
  '(custom-safe-themes
    (quote
     ("d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "42b9d85321f5a152a6aef0cc8173e701f572175d6711361955ecfb4943fe93af" "3fa81193ab414a4d54cde427c2662337c2cab5dd4eb17ffff0d90bca97581eb6" default)))
@@ -129,7 +129,7 @@ static char *gnus-pointer[] = {
  '(org-src-tab-acts-natively t)
  '(package-selected-packages
    (quote
-    (ido-completing-read+ ido-reading-complete+ slime guix expand-region multiple-cursors grayscale-theme solarized-theme kaolin-themes challenger-deep-theme doom-themes nord-theme alect-themes gruvbox-theme ujelly-theme moe-theme darktooth-theme plan9-theme minimal-theme ample-theme badwolf-theme monokai-theme monokai-alt-theme darkokai-theme labburn-theme flycheck stumpwm-mode smart-tabs-mode noctilux-theme zenburn-theme dracula-theme material-theme color-theme-sanityinc-tomorrow color-theme magit projectile linum-relative swiper popup-kill-ring symon symbon diminish company dashboard rainbow-delimiters sudo-edit rainbow-mode avy smex ido-vertical-mode org-bullets beacon which-key use-package)))
+    (geiser ido-completing-read+ ido-reading-complete+ slime expand-region multiple-cursors grayscale-theme solarized-theme kaolin-themes challenger-deep-theme doom-themes nord-theme alect-themes gruvbox-theme ujelly-theme moe-theme darktooth-theme plan9-theme minimal-theme ample-theme badwolf-theme monokai-theme monokai-alt-theme darkokai-theme labburn-theme flycheck stumpwm-mode smart-tabs-mode noctilux-theme zenburn-theme dracula-theme material-theme color-theme-sanityinc-tomorrow color-theme magit projectile linum-relative swiper popup-kill-ring symon symbon diminish company dashboard rainbow-delimiters sudo-edit rainbow-mode avy smex ido-vertical-mode org-bullets beacon which-key use-package)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")

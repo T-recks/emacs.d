@@ -111,8 +111,7 @@ Rebinding these to Ctrl-r and Ctrl-R since swiper is bound to Ctrl-s.
 ** Languages
 *** Lisp
 #+BEGIN_SRC emacs-lisp
-  (setq lisp-indent-function 'common-lisp-indent-function
-        inferior-lisp-program "sbcl")
+  (setq inferior-lisp-program "sbcl")
 #+END_SRC
 ** Compile
 #+BEGIN_SRC emacs-lisp
@@ -237,6 +236,15 @@ For auto-closing parentheses, etc.
   (display-time-mode 1)
 #+END_SRC
 * Packages (Active)
+** smart-tabs
+#+BEGIN_SRC emacs-lisp
+  (use-package smart-tabs-mode
+    :ensure t
+    :init
+    (setq smart-tabs-mode 1)
+    :config
+    (smart-tabs-insinuate 'c 'c++ 'python))
+#+END_SRC
 ** ido-completig-read+
 #+BEGIN_SRC emacs-lisp
   (use-package ido-completing-read+
@@ -244,34 +252,10 @@ For auto-closing parentheses, etc.
     :config
     (ido-ubiquitous-mode 1))
 #+END_SRC
-** guix
-#+BEGIN_SRC emacs-lisp
-    (use-package guix
-      :ensure t
-      :config
-      (setq global-guix-prettify-mode t))
-#+END_SRC
-** slime
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package slime ; may want to install via other means
-    ;; :ensure t)
-
-  (setq slime-contribs '(slime-fancy))
-
-  ;; (use-package slime-company
-    ;; :ensure t)
-
-  ;; (slime-setup '(slime-company))
-#+END_SRC
 ** geiser
-*Note*: For whatever reason, installing in this way does not work...
-The geiser commands will work immediately after installing but once I restart emacs they break.
-Attempting to start a geiser REPL at this point will throw an error:
-"required feature 'geiser-guile' was not provided"
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package geiser
-  ;;   :ensure t)
-#+END_SRC
+*Note*: Installing with use-package causes problems for me...
+The geiser commands will work immediately after installing but once I restart emacs they break. Attempting to start a geiser REPL at this point will throw an error: "required feature 'geiser-guile' was not provided".
+Just directly installing with melpa package-install seems to be working for now...
 ** expand-region
 #+BEGIN_SRC emacs-lisp
   (use-package expand-region
@@ -299,15 +283,6 @@ Attempting to start a geiser REPL at this point will throw an error:
 #+BEGIN_SRC emacs-lisp
   (use-package stumpwm-mode
     :ensure t)
-#+END_SRC
-** smart-tabs
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package smart-tabs-mode
-  ;;   :ensure t
-  ;;   :init
-  ;;   (setq smart-tabs-mode 1)
-  ;;   :config
-  ;;   (smart-tabs-insinuate 'c 'c++ 'lisp 'python))
 #+END_SRC
 ** magit
 #+BEGIN_SRC emacs-lisp
@@ -371,9 +346,8 @@ Attempting to start a geiser REPL at this point will throw an error:
 #+END_SRC
 ** sudo-edit
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package sudo-edit
-  ;;   :ensure t
-  ;;   :bind ("C-c s" . sudo-edit))
+  (use-package sudo-edit
+    :ensure t)
 #+END_SRC
 ** dashboard
 #+BEGIN_SRC emacs-lisp
@@ -404,16 +378,10 @@ Attempting to start a geiser REPL at this point will throw an error:
 ** modeline
 *** powerline
 #+BEGIN_SRC emacs-lisp
-  (powerline-center-theme)
-#+END_SRC
-*** spaceline
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package spaceline
-  ;;   :ensure t
-  ;;   :config
-  ;;   (require 'spaceline-config)
-  ;;   (setq powerline-default-separator (quote arrow))
-  ;;   (spaceline-spacemacs-theme))
+  (use-package powerline
+    :ensure t
+    :init
+    (powerline-center-theme))
 #+END_SRC
 *** diminish
 #+BEGIN_SRC emacs-lisp
@@ -460,6 +428,36 @@ Attempting to start a geiser REPL at this point will throw an error:
     (projectile-mode 1))
 #+END_SRC
 * Packages (Unused)
+** spaceline
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package spaceline
+  ;;   :ensure t
+  ;;   :config
+  ;;   (require 'spaceline-config)
+  ;;   (setq powerline-default-separator (quote arrow))
+  ;;   (spaceline-spacemacs-theme))
+#+END_SRC
+
+** slime
+I'll probably install with quicklisp in the future.
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package slime
+    ;; :ensure t)
+#+END_SRC
+This package is annoying me at the moment when typing in the REPL so I've disabled it.
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package slime-company
+    ;; :ensure t)
+
+  ;; (slime-setup '(slime-company))
+#+END_SRC
+** guix
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package guix
+    ;; :ensure t
+    ;; :config
+    ;; (setq global-guix-prettify-mode t))
+#+END_SRC
 ** hungry-delete
 Note: there is a package called hungry-delete that will automatically
 delete whitespace until it finds a non-whitespace character when
@@ -581,4 +579,5 @@ For some reason this setting not only does nothing but also throws an error at l
 * Slime
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "s-s") 'slime-selector)
+  (setq slime-contribs '(slime-fancy))
 #+END_SRC
