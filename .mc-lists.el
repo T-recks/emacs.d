@@ -4,6 +4,7 @@
 (setq mc/cmds-to-run-for-all
       '(
 		mc/unmark-next-like-this-word
+		smex
 		))
 
 (setq mc/cmds-to-run-once
