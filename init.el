@@ -19,13 +19,24 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(TeX-engine (quote xetex))
+ '(TeX-view-program-selection
+   (quote
+    (((output-dvi has-no-display-manager)
+      "dvi2tty")
+     ((output-dvi style-pstricks)
+      "dvips and gv")
+     (output-dvi "xdvi")
+     (output-pdf "Zathura")
+     (output-html "xdg-open"))))
  '(ansi-color-names-vector
-   ["#fafafa" "#ca1243" "#50a14f" "#c18401" "#4078f2" "#a626a4" "#4078f2" "#383a42"])
+   ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#839496"])
  '(ansi-term-color-vector
-   [unspecified "#f2e5bc" "#9d0006" "#79740e" "#b57614" "#076678" "#8f3f71" "#076678" "#504945"] t)
+   [term term-color-black term-color-red term-color-green term-color-yellow term-color-blue term-color-magenta term-color-cyan term-color-white] t)
  '(background-color "#111111")
  '(background-mode dark)
  '(beacon-color "#f2777a")
+ '(browse-url-browser-function (quote browse-url-firefox))
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(compilation-message-face (quote default))
@@ -34,10 +45,12 @@
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
  '(cursor-color "#cccccc")
- '(custom-enabled-themes (quote (solarized-light)))
+ '(custom-enabled-themes (list (intern (getenv "THEME"))))
  '(custom-safe-themes
    (quote
-    ("d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "42b9d85321f5a152a6aef0cc8173e701f572175d6711361955ecfb4943fe93af" "3fa81193ab414a4d54cde427c2662337c2cab5dd4eb17ffff0d90bca97581eb6" default)))
+    ("ecba61c2239fbef776a72b65295b88e5534e458dfe3e6d7d9f9cb353448a569e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "42b9d85321f5a152a6aef0cc8173e701f572175d6711361955ecfb4943fe93af" "3fa81193ab414a4d54cde427c2662337c2cab5dd4eb17ffff0d90bca97581eb6" default)))
+ '(desktop-path (quote ("~")))
+ '(desktop-save-mode t)
  '(diary-entry-marker (quote font-lock-variable-name-face))
  '(emms-mode-line-icon-image-cache
    (quote
@@ -59,8 +72,8 @@ static char *note[] = {
 \"#..######.\",
 \"#######...\",
 \"######....\",
-\"#######..#\" };")))
- '(fci-rule-color "#ECEFF1" t)
+\"#######..#\" };")) t)
+ '(fci-rule-color "#eee8d5" t)
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(foreground-color "#cccccc")
  '(frame-background-mode (quote dark))
@@ -88,7 +101,7 @@ static char *gnus-pointer[] = {
 \"###....####.######\",
 \"###..######.######\",
 \"###########.######\" };")) t)
- '(highlight-changes-colors (quote ("#ff8eff" "#ab7eff")))
+ '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
  '(highlight-symbol-colors
    (--map
     (solarized-color-blend it "#fdf6e3" 0.25)
@@ -97,14 +110,14 @@ static char *gnus-pointer[] = {
  '(highlight-symbol-foreground-color "#586e75")
  '(highlight-tail-colors
    (quote
-    (("#424748" . 0)
-     ("#63de5d" . 20)
-     ("#4BBEAE" . 30)
-     ("#1DB4D0" . 50)
-     ("#9A8F21" . 60)
-     ("#A75B00" . 70)
-     ("#F309DF" . 85)
-     ("#424748" . 100))))
+    (("#eee8d5" . 0)
+     ("#B4C342" . 20)
+     ("#69CABF" . 30)
+     ("#69B7F0" . 50)
+     ("#DEB542" . 60)
+     ("#F2804F" . 70)
+     ("#F771AC" . 85)
+     ("#eee8d5" . 100))))
  '(hl-bg-colors
    (quote
     ("#DEB542" "#F2804F" "#FF6E64" "#F771AC" "#9EA0E5" "#69B7F0" "#69CABF" "#B4C342")))
@@ -112,8 +125,9 @@ static char *gnus-pointer[] = {
    (quote
     ("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3")))
  '(hl-paren-background-colors (quote ("#e8fce8" "#c1e7f8" "#f8e8e8")))
- '(hl-paren-colors (quote ("#40883f" "#0287c8" "#b85c57")))
+ '(hl-paren-colors (quote ("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900")))
  '(hl-sexp-background-color "#efebe9")
+ '(irony-supported-major-modes (quote (c++-mode c-mode objc-mode arduino-mode)))
  '(jdee-db-active-breakpoint-face-colors (cons "#000000" "#fd971f"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#000000" "#b6e63e"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#000000" "#525254"))
@@ -125,14 +139,14 @@ static char *gnus-pointer[] = {
      ("deleted" :foreground "#ff2c4b" :bold t))))
  '(nrepl-message-colors
    (quote
-    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+    ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-src-tab-acts-natively t)
  '(package-selected-packages
    (quote
-    (geiser ido-completing-read+ ido-reading-complete+ slime expand-region multiple-cursors grayscale-theme solarized-theme kaolin-themes challenger-deep-theme doom-themes nord-theme alect-themes gruvbox-theme ujelly-theme moe-theme darktooth-theme plan9-theme minimal-theme ample-theme badwolf-theme monokai-theme monokai-alt-theme darkokai-theme labburn-theme flycheck stumpwm-mode smart-tabs-mode noctilux-theme zenburn-theme dracula-theme material-theme color-theme-sanityinc-tomorrow color-theme magit projectile linum-relative swiper popup-kill-ring symon symbon diminish company dashboard rainbow-delimiters sudo-edit rainbow-mode avy smex ido-vertical-mode org-bullets beacon which-key use-package)))
+    (arduino-mode ediprolog slime ivy-youtube auctex easy-kill rtags irony-eldoc irony elmacro gnuplot mingus dante corral simple-mpc emms arch-packer stumpwm-mode cider md4rd paredit w3m dmenu switch-window powerline guix geiser ido-completing-read+ ido-reading-complete+ expand-region multiple-cursors solarized-theme challenger-deep-theme nord-theme gruvbox-theme darktooth-theme plan9-theme badwolf-theme darkokai-theme flycheck smart-tabs-mode noctilux-theme dracula-theme color-theme magit projectile linum-relative swiper popup-kill-ring symon symbon diminish company dashboard rainbow-delimiters sudo-edit rainbow-mode avy smex ido-vertical-mode org-bullets beacon which-key use-package)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
- '(pos-tip-background-color "#E6DB74")
- '(pos-tip-foreground-color "#242728")
+ '(pos-tip-background-color "#eee8d5")
+ '(pos-tip-foreground-color "#586e75")
  '(rainbow-identifiers-choose-face-function (quote rainbow-identifiers-cie-l*a*b*-choose-face) t)
  '(rainbow-identifiers-cie-l*a*b*-color-count 1024 t)
  '(rainbow-identifiers-cie-l*a*b*-lightness 80 t)
@@ -148,27 +162,28 @@ static char *gnus-pointer[] = {
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
    (quote
-    ((20 . "#B71C1C")
-     (40 . "#FF5722")
-     (60 . "#FFA000")
-     (80 . "#558b2f")
-     (100 . "#00796b")
-     (120 . "#2196f3")
-     (140 . "#4527A0")
-     (160 . "#B71C1C")
-     (180 . "#FF5722")
-     (200 . "#FFA000")
-     (220 . "#558b2f")
-     (240 . "#00796b")
-     (260 . "#2196f3")
-     (280 . "#4527A0")
-     (300 . "#B71C1C")
-     (320 . "#FF5722")
-     (340 . "#FFA000")
-     (360 . "#558b2f"))))
+    ((20 . "#dc322f")
+     (40 . "#c8805d801780")
+     (60 . "#bec073400bc0")
+     (80 . "#b58900")
+     (100 . "#a5008e550000")
+     (120 . "#9d0091000000")
+     (140 . "#950093aa0000")
+     (160 . "#8d0096550000")
+     (180 . "#859900")
+     (200 . "#66aa9baa32aa")
+     (220 . "#57809d004c00")
+     (240 . "#48559e556555")
+     (260 . "#392a9faa7eaa")
+     (280 . "#2aa198")
+     (300 . "#28669833af33")
+     (320 . "#279993ccbacc")
+     (340 . "#26cc8f66c666")
+     (360 . "#268bd2"))))
  '(vc-annotate-very-old-color nil)
  '(weechat-color-list
-   (unspecified "#242728" "#424748" "#F70057" "#ff0066" "#86C30D" "#63de5d" "#BEB244" "#E6DB74" "#40CAE4" "#06d8ff" "#FF61FF" "#ff8eff" "#00b2ac" "#53f2dc" "#f8fbfc" "#ffffff"))
+   (quote
+    (unspecified "#fdf6e3" "#eee8d5" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#657b83" "#839496")))
  '(xterm-color-names
    ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#073642"])
  '(xterm-color-names-bright
@@ -181,3 +196,4 @@ static char *gnus-pointer[] = {
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "PfEd" :family "DejaVu Sans Mono")))))
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)

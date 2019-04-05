@@ -1,37 +1,47 @@
-(global-set-key (kbd "C-x g o") 'mode-line-other-buffer)
+(defvar *my-global-keybindings* nil
+  "A list of user-defined global keybindings.")
 
-;  (global-set-key "Alt_L" . "Super")
+(defun make-global-keybindings (key-pairs)
+  "KEY-PAIRS are of the form (string symbol) where STRING contains the key combination and SYMBOL is the function to call."
+  (append (mapcar (lambda (x)
+                    (list 'global-set-key (list 'kbd (car x)) (cadr x)))
+                  key-pairs)
+          (mapcar (lambda (x)
+                    (list 'push-new-global-keybinding `',x))
+                  key-pairs)))
 
-(global-set-key (kbd "C-r") 'isearch-forward)
-(global-set-key (kbd "C-S-R") 'isearch-backward)
+(defun push-new-global-keybinding (key-pair)
+  (unless (member key-pair *my-global-keybindings*)
+    (push key-pair *my-global-keybindings*)))
 
-(global-set-key (kbd "C-c a") 'org-agenda)
+(defmacro def-global-keys (&rest key-pairs)
+  "Expand a series of (str sym) -> (global-set-key (kbd str) sym)."
+  `(progn ,@(make-global-keybindings key-pairs)))
 
-(global-set-key (kbd "<s-return>") 'ansi-term)
-
-(global-set-key (kbd "C-x b") 'ibuffer)
-
-(global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
-
-(global-set-key (kbd "C-c e") 'config-visit)
-(global-set-key (kbd "C-c r") 'config-reload)
-
-(global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
-(global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
-
-(global-set-key (kbd "C-c w w") 'kill-whole-word)
-
-(global-set-key (kbd "C-c w l") 'copy-whole-line)
-
-(global-set-key (kbd "C-x k") 'kill-current-buffer)
-
-(global-set-key (kbd "C-M-s-k") 'kill-all-buffers)
+(def-global-keys
+  ("C-x O" 'mode-line-other-buffer)
+  ("s-a" 'org-agenda)
+  ;; Rebinding these to Ctrl-r and Ctrl-R since swiper is bound to Ctrl-s.
+  ("C-r" 'isearch-forward)
+  ("C-S-R" 'isearch-backward)
+  ("<s-return>" 'ansi-term)
+  ("C-x b" 'ibuffer)
+  ("C-x C-b" 'ido-switch-buffer)
+  ("C-c s-e" 'config-visit)
+  ("C-c s-r" 'config-reload)
+  ("C-c s-s" 'stumpwm-config)
+  ("C-x 2" 'split-and-follow-horizontally)
+  ("C-x 3" 'split-and-follow-vertically)
+  ("C-c w w" 'kill-whole-word)
+  ("C-c w l" 'copy-whole-line)
+  ("C-x k" 'kill-current-buffer)
+  ("C-M-s-k" 'kill-all-buffers))
 
 (setq
  ido-enable-flex-matching nil
  ido-create-new-buffer 'always
- ido-everywhere 1)
-(ido-mode 1)
+ ido-everywhere t)
+(ido-mode t)
 
 ;; vertical ido
 ;; ido-vertical-mode from the package destroys C-h f performance in conjunction with ido-ubiquitous-mode
@@ -69,13 +79,42 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
-(setq inferior-lisp-program "sbcl")
+(defun mark-line ()
+  (interactive)
+  (move-beginning-of-line nil)
+  (set-mark-command nil)
+  (move-end-of-line nil))
 
-(global-set-key (kbd "s-c") 'compile)
+(defun comment-box-line ()
+  (interactive "*r\np")
+  (mark-line)
+  (comment-box))
+
+;; Center screen on menu item when moving up.
+(advice-add 'Info-up :after 'recenter)
+
+;; (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+;; (add-hook 'org-mode-hook 'flyspell-mode)
+(global-set-key (kbd "<f8>") 'flyspell-mode)
+
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+
+(unless (getenv "THEME")
+  (setenv "THEME" "solarized-light"))
+
+(setq inferior-lisp-program "/usr/bin/sbcl")
+
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+(add-hook 'irony-mode-hook 'irony-eldoc)
+
+(global-set-key (kbd "C-c s-c") 'compile)
 
 (setq-default c-basic-offset 4
               tab-width 4
-              indent-tabs-mode nil)
+              indent-tabs-mode nil
+              c-default-style "k&r")
 ;(setq tab-width 4
 ;      indent-tabs-mode t
 ;      c-default-style "k&r")
@@ -105,6 +144,8 @@
                             ))
 ;;(electric-pair-mode t)
 
+(show-paren-mode t)
+
 (setq auto-save-default nil)
 
 (setq
@@ -124,7 +165,9 @@
 
 (when window-system (global-hl-line-mode t))
 
-(when window-system (global-prettify-symbols-mode t))
+;; (when window-system (global-prettify-symbols-mode t))
+;; (global-prettify-symbols-mode t)
+;; (global-pretty-mode t)
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -144,6 +187,10 @@
   (interactive)
   (find-file "~/.emacs.d/config.org"))
 
+(defun stumpwm-config ()
+  (interactive)
+  (find-file "~/.stumpwm.d/init.lisp"))
+
 (defun config-reload ()
   (interactive)
   (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
@@ -151,10 +198,65 @@
 (setq display-time-24hr-format t)
 (display-time-mode 1)
 
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+;; (setq-default TeX-master nil) ; prompt for master file, useful for multi-documents
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+(setq reftex-plug-into-AUCTeX t)
+(setq TeX-electric-sub-and-superscript t)
+(add-hook 'LaTeX-mode-hook 'visual-line-mode)
+(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+(setq TeX-PDF-mode t)
+
+;; see https://superuser.com/a/902764
+;; (TeX-global-PDF-mode t)
+(setq latex-run-command "pdflatex")
+
+(use-package mingus
+  :ensure t
+  :config
+  ;; (add-to-list 'ivy-completing-read-handlers-alist '(mingus-query . nil))
+  :bind
+  ("s-m b" . mingus-browse)
+  ("s-m p" . mingus))
+
+(use-package emms
+  :ensure t
+  :config
+    (require 'emms-setup)
+    (require 'emms-player-mpd)
+    (emms-all) ; don't change this to values you see on stackoverflow questions if you expect emms to work
+    (setq emms-seek-seconds 5)
+    (setq emms-player-list '(emms-player-mpd))
+    (setq emms-info-functions '(emms-info-mpd))
+    (setq emms-player-mpd-server-name "localhost")
+    (setq emms-player-mpd-server-port "6600"))
+    ;; ("s-m r" . emms-player-mpd-update-all-reset-cache)
+(setq mpc-host "localhost:6600")
+
+(defun mpd/update-database ()
+  "Updates the MPD database synchronously."
+  (interactive)
+  (call-process "mpc" nil nil nil "update")
+  (message "MPD Database Updated!"))
+(global-set-key (kbd "s-m u") 'mpd/update-database)
+
+(use-package paredit
+  :ensure t
+  :config
+  (add-hook 'lisp-mode-hook 'paredit-mode)
+  (add-hook 'scheme-mode-hook 'paredit-mode)
+  (add-hook 'emacs-lisp-mode-hook 'paredit-mode))
+
+(use-package dmenu
+  :ensure t
+  :bind
+  ("s-SPC" . 'dmenu))
+
 (use-package smart-tabs-mode
   :ensure t
   :init
-  (setq smart-tabs-mode 1)
+  (setq smart-tabs-mode nil)
   :config
   (smart-tabs-insinuate 'c 'c++ 'python))
 
@@ -163,9 +265,13 @@
   :config
   (ido-ubiquitous-mode 1))
 
+(use-package easy-kill
+  :ensure t
+  :config (global-set-key [remap kill-ring-save] 'easy-kill))
+
 (use-package expand-region
   :ensure t
-  :bind ("C-S-q" . 'er/expand-region))
+  :bind ("C-=" . 'er/expand-region))
 
 (use-package multiple-cursors
   :ensure t
@@ -184,9 +290,7 @@
   :ensure t)
 
 (use-package magit
-  :ensure t
-  :bind
-  ("s-g" . magit-status))
+  :ensure t)
 
 (use-package which-key
   :ensure t
@@ -221,12 +325,12 @@
   :ensure t
   :init (add-hook 'prog-mode-hook 'rainbow-mode))
 
-(use-package rainbow-delimiters
-  :ensure t
-  :init
-  (rainbow-delimiters-mode 1)
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-  (add-hook 'geiser-repl-mode 'rainbow-delimiters-mode))
+;; (use-package rainbow-delimiters
+;;   :ensure t
+;;   :init
+;;   (rainbow-delimiters-mode t)
+;;   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+;;   (add-hook 'geiser-repl-mode 'rainbow-delimiters-mode))
 
 (use-package sudo-edit
   :ensure t)
@@ -243,9 +347,9 @@
 (use-package company
   :ensure t
   :config
-  (setq company-idle-delay 1)
+  (setq company-idle-delay 0)
   :init
-  (add-hook 'after-init-hook 'company-mode))
+  (add-hook 'prog-mode-hook 'company-mode))
 
 (with-eval-after-load 'company
     (define-key company-active-map (kbd "M-n") nil)
@@ -256,21 +360,25 @@
 (use-package powerline
   :ensure t
   :init
-  (powerline-center-theme))
+  (powerline-default-theme))
 
 (use-package diminish
   :ensure t
   :init
-  (diminish 'auto-revert-mode)
-  (diminish 'beacon-mode)
-  (diminish 'which-key-mode)
-  (diminish 'subword-mode)
-  (diminish 'rainbow-mode)
-  (diminish 'linum-relative-mode)
-  (diminish 'visual-line-mode)
-  (diminish 'global-guix-prettify-mode)
-  (diminish 'guix-prettify-mode)
-  (diminish 'org-indent-mode))
+  (mapc 'diminish
+        '(auto-revert-mode
+          beacon-mode
+          which-key-mode
+          subword-mode
+          rainbow-mode
+          linum-relative-mode
+          visual-line-mode
+          global-guix-prettify-mode
+          guix-prettify-mode
+          org-indent-mode
+          paredit-mode
+          org-indent-mode
+          eldoc-mode)))
 
 (use-package symon
   :ensure t
@@ -307,10 +415,10 @@
 
 ;; (slime-setup '(slime-company))
 
-;; (use-package guix
-  ;; :ensure t
-  ;; :config
-  ;; (setq global-guix-prettify-mode t))
+(use-package guix
+  :ensure t
+  :config
+  (setq global-guix-prettify-mode t))
 
 ;; (use-package ido-vertical-mode ; disabled b/c of performance with ido-ubiquitous
 ;;   :ensure t
@@ -323,28 +431,29 @@
 ;;   :bind
 ;;   ("C-x \\" . 'treemacs-toggle))
 
-;; (use-package switch-window ; don't need this now
-;;   :ensure t
-;;   :config
-;;   (setq
-;;    switch-window-input-style 'minibuffer
-;;    switch-window-increase 4
-;;    switch-window-threshold 2
-;;    switch-window-shortcut-style 'qwerty
-;;    switch-window-qwerty-shortcuts
-;;    '("a" "s" "d" "f" "j" "k" "l"))
-;;   :bind
-;;   ([remap other-window] . switch-window))
-
-;; (use-package dmenu
-;;   :ensure t
-;;   :bind
-;;   ("C-s-SPC" . 'dmenu))
+(use-package switch-window ; don't need this now
+  :ensure t
+  :config
+  (setq
+   switch-window-input-style 'minibuffer
+   switch-window-increase 4
+   switch-window-threshold 2
+   switch-window-shortcut-style 'qwerty
+   switch-window-qwerty-shortcuts
+   '("a" "s" "d" "f" "j" "k" "l"))
+  :bind
+  ([remap other-window] . switch-window))
 
 (defvar my-term-shell "/usr/bin/zsh")
 (defadvice ansi-term (before force-bash)
   (interactive (list my-term-shell)))
+(defadvice term (before force-bash)
+  (interactive (list my-term-shell)))
 (ad-activate 'ansi-term)
+(ad-activate 'term)
+
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
 
 (setq org-src-window-setup 'current-window)
 
@@ -373,16 +482,56 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((lisp . t)
-   (python . t)))
+   (python . t)
+   (gnuplot . t)))
 (defun my-org-confirm-babel-evaluate (lang body)
-  (not (string= lang "lisp")))  ; don't ask for listed languages
+  (not (string= lang "lisp"))
+  (not (string= lang "emacs-lisp")))  ; don't ask for listed languages
 (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate) ;; overwrite default
 
-;; (add-hook 'org-mode-hook '(lambda () (visual-line-mode)))
+(add-hook 'org-mode-hook '(lambda () (visual-line-mode)))
 
 (add-to-list 'org-agenda-files (expand-file-name "~/orgfiles"))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 
 (global-set-key (kbd "s-s") 'slime-selector)
-(setq slime-contribs '(slime-fancy))
+(global-set-key (kbd "C-h H") 'slime-documentation-lookup)
+;; (load (expand-file-name "/usr/lib/quicklisp/slime-helper.el"))
+(add-to-list 'slime-contribs 'slime-fancy)
+(add-to-list 'slime-contribs 'slime-banner)
+
+;; For faster startup. SLIME manual 2.5.3.
+(setq slime-lisp-implementations
+      `((sbcl ("sbcl" "--core" ,(expand-file-name "~/.emacs.d/sbcl.core-for-slime")))))
+
+;; Local HyperSpec copy. Use w3m.
+(setq common-lisp-hyperspec-root (expand-file-name "~/.emacs.d/HyperSpec/"))
+(setq slime-browse-url-browser-function 'w3m-browse-url)
+
+;; Would like a cleaner way to do this, i.e. just wrap slime-hyperspec-lookup instead of making a copied definition...
+(defun my-slime-hyperspec-lookup (symbol-name)
+  "Identical to `slime-hyperspec-lookup' except we shadow `browse-url-browser-function'."
+  (interactive (list (common-lisp-hyperspec-read-symbol-name
+                      (slime-symbol-at-point))))
+  (if slime-browse-url-browser-function
+      (let ((browse-url-browser-function
+             slime-browse-url-browser-function))
+        (hyperspec-lookup symbol-name))
+    (hyperspec-lookup symbol-name)))
+
+(setq slime-documentation-lookup-function 'my-slime-hyperspec-lookup)
+
+;; Chicken Scheme extension - broken
+;; (add-to-list 'load-path (expand-file-name (directory-file-name "~/Builds/chicken-slime/swank-chicken/")))
+;; (autoload 'chicken-slime "chicken-slime" "SWANK backend for Chicken" t)
+;; (add-hook 'scheme-mode-hook 'slime-mode)
+
+;; (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
+(defvar tramp-shell-prompt-pattern-default "\\(?:^\\|\\)[^]#$%>\n]*#?[]#$%>] *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
+(setf tramp-shell-prompt-pattern "\\(?:^\\|\\)[^]#$%>\n]*#?[]#$%>].* *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
+
+(add-to-list 'auto-mode-alist '("\\.pl$" . prolog-mode))
+;; (define-key 'prolog-mode-map (kbd "C-x C-e") 'ediprolog-dwim)
+
+(setq prolog-electric-if-then-else-flag t)
