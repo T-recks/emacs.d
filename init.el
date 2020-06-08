@@ -48,7 +48,7 @@
  '(custom-enabled-themes (list (intern (getenv "THEME"))))
  '(custom-safe-themes
    (quote
-    ("ecba61c2239fbef776a72b65295b88e5534e458dfe3e6d7d9f9cb353448a569e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "42b9d85321f5a152a6aef0cc8173e701f572175d6711361955ecfb4943fe93af" "3fa81193ab414a4d54cde427c2662337c2cab5dd4eb17ffff0d90bca97581eb6" default)))
+    ("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "d91ef4e714f05fff2070da7ca452980999f5361209e679ee988e3c432df24347" "ecba61c2239fbef776a72b65295b88e5534e458dfe3e6d7d9f9cb353448a569e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "42b9d85321f5a152a6aef0cc8173e701f572175d6711361955ecfb4943fe93af" "3fa81193ab414a4d54cde427c2662337c2cab5dd4eb17ffff0d90bca97581eb6" default)))
  '(desktop-path (quote ("~")))
  '(desktop-save-mode t)
  '(diary-entry-marker (quote font-lock-variable-name-face))
@@ -77,6 +77,7 @@ static char *note[] = {
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(foreground-color "#cccccc")
  '(frame-background-mode (quote dark))
+ '(geiser-default-implementation (quote \'chez))
  '(gnus-logo-colors (quote ("#528d8d" "#c0c0c0")) t)
  '(gnus-mode-line-image-cache
    (quote
@@ -143,7 +144,7 @@ static char *gnus-pointer[] = {
  '(org-src-tab-acts-natively t)
  '(package-selected-packages
    (quote
-    (arduino-mode ediprolog slime ivy-youtube auctex easy-kill rtags irony-eldoc irony elmacro gnuplot mingus dante corral simple-mpc emms arch-packer stumpwm-mode cider md4rd paredit w3m dmenu switch-window powerline guix geiser ido-completing-read+ ido-reading-complete+ expand-region multiple-cursors solarized-theme challenger-deep-theme nord-theme gruvbox-theme darktooth-theme plan9-theme badwolf-theme darkokai-theme flycheck smart-tabs-mode noctilux-theme dracula-theme color-theme magit projectile linum-relative swiper popup-kill-ring symon symbon diminish company dashboard rainbow-delimiters sudo-edit rainbow-mode avy smex ido-vertical-mode org-bullets beacon which-key use-package)))
+    (tuareg oberon cypher-mode slime forth-mode flymake-python-pyflakes elpy markdown-mode swiper sml-mode mentor php-mode arduino-mode ediprolog ivy-youtube auctex easy-kill rtags irony-eldoc irony elmacro gnuplot mingus dante corral simple-mpc emms arch-packer stumpwm-mode cider md4rd paredit w3m dmenu switch-window powerline guix ido-completing-read+ ido-reading-complete+ expand-region multiple-cursors solarized-theme nord-theme gruvbox-theme darktooth-theme plan9-theme badwolf-theme darkokai-theme flycheck smart-tabs-mode noctilux-theme color-theme magit projectile linum-relative popup-kill-ring symon symbon diminish company dashboard rainbow-delimiters sudo-edit rainbow-mode avy smex ido-vertical-mode org-bullets beacon which-key use-package)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
@@ -156,6 +157,7 @@ static char *gnus-pointer[] = {
  '(sml/active-foreground-color "#424242")
  '(sml/inactive-background-color "#4fa8a8")
  '(sml/inactive-foreground-color "#424242")
+ '(tab-width 4)
  '(term-default-bg-color "#fdf6e3")
  '(term-default-fg-color "#657b83")
  '(vc-annotate-background nil)

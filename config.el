@@ -79,6 +79,15 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
+(defun save-position ()
+  (interactive)
+  (push-mark))
+
+(global-set-key (kbd "s-x") 'save-position)
+
+(setq calendar-latitude 33.46)
+(setq calendar-longitude -118.11)
+
 (defun mark-line ()
   (interactive)
   (move-beginning-of-line nil)
@@ -102,10 +111,10 @@
 (unless (getenv "THEME")
   (setenv "THEME" "solarized-light"))
 
-(setq inferior-lisp-program "/usr/bin/sbcl")
+;; (setq inferior-lisp-program "sbcl")
 
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
+;; (add-hook 'c++-mode-hook 'irony-mode)
+;; (add-hook 'c-mode-hook 'irony-mode)
 (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 (add-hook 'irony-mode-hook 'irony-eldoc)
 
@@ -114,10 +123,16 @@
 (setq-default c-basic-offset 4
               tab-width 4
               indent-tabs-mode nil
-              c-default-style "k&r")
+              c-default-style "k&r"
+              python-indent 4
+              python-guess-indent nil)
 ;(setq tab-width 4
 ;      indent-tabs-mode t
 ;      c-default-style "k&r")
+
+;; For some reason the above doesn't work for python...
+(custom-set-variables
+ '(tab-width 4))
 
 ;(defvaralias 'c-basic-offset 'tab-width)
 
@@ -198,6 +213,9 @@
 (setq display-time-24hr-format t)
 (display-time-mode 1)
 
+;; (use-package sml-mode
+;;   :ensure t)
+
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
 ;; (setq-default TeX-master nil) ; prompt for master file, useful for multi-documents
@@ -247,6 +265,13 @@
   (add-hook 'lisp-mode-hook 'paredit-mode)
   (add-hook 'scheme-mode-hook 'paredit-mode)
   (add-hook 'emacs-lisp-mode-hook 'paredit-mode))
+
+(defun no-space-between-@-open-paren (endp delimiter)
+  (not (and (eql ?\( delimiter)
+            (eql ?\@ (char-before (point))))))
+
+(setq paredit-space-for-delimiter-predicates
+      '(no-space-between-@-open-paren))
 
 (use-package dmenu
   :ensure t
@@ -357,11 +382,6 @@
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-p") #'company-select-previous))
 
-(use-package powerline
-  :ensure t
-  :init
-  (powerline-default-theme))
-
 (use-package diminish
   :ensure t
   :init
@@ -452,6 +472,24 @@
 (ad-activate 'ansi-term)
 (ad-activate 'term)
 
+(require 'ox-publish)
+(setq org-publish-project-alist
+      '(("website-notes"
+         :base-directory "~/website/org/"
+         :base-extension "org"
+         :publishing-directory "~/website/html/"
+         :recursive t
+         :publishing-function org-html-publish-to-html
+         :headline-levels 4
+         :auto-preamble t)
+        ("website-static"
+         :base-directory "~/website/org/"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|mp4"
+         :publishing-directory "~/website/html/"
+         :recursive t
+         :publishing-function org-publish-attachment)
+        ("website" :components ("website-notes" "website-static"))))
+
 (setq org-clock-persist 'history)
 (org-clock-persistence-insinuate)
 
@@ -483,11 +521,16 @@
  'org-babel-load-languages
  '((lisp . t)
    (python . t)
-   (gnuplot . t)))
+   (gnuplot . t)
+   ))
 (defun my-org-confirm-babel-evaluate (lang body)
-  (not (string= lang "lisp"))
-  (not (string= lang "emacs-lisp")))  ; don't ask for listed languages
+  (and (not (string= lang "lisp"))
+       (not (string= lang "emacs-lisp"))
+       (not (string= lang "scheme"))))  ; don't ask for listed languages
+
 (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate) ;; overwrite default
+
+;; (setq org-babel-lisp-eval-fn 'slime-eval)
 
 (add-hook 'org-mode-hook '(lambda () (visual-line-mode)))
 
@@ -495,17 +538,21 @@
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 
+(add-hook 'org-mode-hook '(lambda () (setq line-spacing .1)))
+(defun set-line-spacing (num)
+  (interactive "nPick a number for line spacing: ")
+  (setq-local line-spacing num))
+
 (global-set-key (kbd "s-s") 'slime-selector)
 (global-set-key (kbd "C-h H") 'slime-documentation-lookup)
 ;; (load (expand-file-name "/usr/lib/quicklisp/slime-helper.el"))
 (add-to-list 'slime-contribs 'slime-fancy)
 (add-to-list 'slime-contribs 'slime-banner)
 
-;; For faster startup. SLIME manual 2.5.3.
 (setq slime-lisp-implementations
-      `((sbcl ("sbcl" "--core" ,(expand-file-name "~/.emacs.d/sbcl.core-for-slime")))))
+      `((sbcl ("sbcl" "--core" ,(expand-file-name "~/.emacs.d/sbcl.core-for-slime")))
+        (acl ("/home/tim/Code/allegro/acl10.1express/mlisp"))))
 
-;; Local HyperSpec copy. Use w3m.
 (setq common-lisp-hyperspec-root (expand-file-name "~/.emacs.d/HyperSpec/"))
 (setq slime-browse-url-browser-function 'w3m-browse-url)
 
@@ -522,7 +569,6 @@
 
 (setq slime-documentation-lookup-function 'my-slime-hyperspec-lookup)
 
-;; Chicken Scheme extension - broken
 ;; (add-to-list 'load-path (expand-file-name (directory-file-name "~/Builds/chicken-slime/swank-chicken/")))
 ;; (autoload 'chicken-slime "chicken-slime" "SWANK backend for Chicken" t)
 ;; (add-hook 'scheme-mode-hook 'slime-mode)
