@@ -27,22 +27,27 @@
     ("C-x O" 'mode-line-other-buffer)
     ("s-a" 'org-agenda)
     ;; Rebinding these to Ctrl-r and Ctrl-R since swiper is bound to Ctrl-s.
-    ("C-r" 'isearch-forward)
-    ("C-S-R" 'isearch-backward)
+    ;; ("C-r" 'isearch-forward)
+    ;; ("C-S-R" 'isearch-backward)
     ("<s-return>" 'ansi-term)
     ("C-x b" 'ibuffer)
     ("C-x C-b" 'ido-switch-buffer)
-    ("C-c s-e" 'config-visit)
-    ("C-c s-r" 'config-reload)
-    ("C-c s-s" 'stumpwm-config)
+    ("s-e" 'config-visit)
+    ("s-r" 'config-reload)
+    ("s-w" 'stumpwm-config)
     ("C-x 2" 'split-and-follow-horizontally)
     ("C-x 3" 'split-and-follow-vertically)
     ("C-c w w" 'kill-whole-word)
     ("C-c w l" 'copy-whole-line)
-    ("C-x k" 'kill-current-buffer)
-    ("C-M-s-k" 'kill-all-buffers))
-#+END_SRC
+    ("C-x k" 'kill-current-buffer))
 
+  (defun dired-zathura ()
+    (interactive)
+    (dired-do-shell-command "zathura" nil (dired-get-marked-files)))
+
+  (require 'dired)
+  (define-key dired-mode-map (kbd "z") 'dired-zathura)
+#+END_SRC
 ** Enable Ido Mode
 #+BEGIN_SRC emacs-lisp
   (setq
@@ -94,7 +99,11 @@
     (interactive)
     (mapc 'kill-buffer (buffer-list)))
 #+END_SRC
-* General QoL
+* General / QoL
+** TODO Cursor
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
 ** Mark
 #+BEGIN_SRC emacs-lisp
   (defun save-position ()
@@ -102,6 +111,16 @@
     (push-mark))
 
   (global-set-key (kbd "s-x") 'save-position)
+#+END_SRC
+** Creating space
+#+BEGIN_SRC emacs-lisp
+  (defun open-newline ()
+    (interactive)
+    (newline)
+    (open-line 1)
+    (indent-for-tab-command))
+
+  (global-set-key (kbd "C-S-o") 'open-newline)
 #+END_SRC
 ** Calendar
 #+BEGIN_SRC emacs-lisp
@@ -156,6 +175,7 @@
 ** Compile
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c s-c") 'compile)
+  (global-set-key (kbd "s-c") 'compile)
 #+END_SRC
 ** Tabs and spaces
 #+BEGIN_SRC emacs-lisp
@@ -172,6 +192,8 @@
   ;; For some reason the above doesn't work for python...
   (custom-set-variables
    '(tab-width 4))
+
+  (setq tab-stop-list (number-sequence 4 100 4))
 
   ;(defvaralias 'c-basic-offset 'tab-width)
 #+END_SRC
@@ -244,11 +266,9 @@ For auto-closing parentheses, etc.
 ** Visual
 *** GUI Tweaks
 #+BEGIN_SRC emacs-lisp
-  (when window-system (global-hl-line-mode t))
-
-  ;; (when window-system (global-prettify-symbols-mode t))
-  ;; (global-prettify-symbols-mode t)
-  ;; (global-pretty-mode t)
+  (when window-system
+    (global-hl-line-mode t)
+    (global-prettify-symbols-mode t))
 
   (tool-bar-mode -1)
   (menu-bar-mode -1)
@@ -293,61 +313,25 @@ For auto-closing parentheses, etc.
   (display-time-mode 1)
 #+END_SRC
 * Packages (Active)
-** 
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package sml-mode
-  ;;   :ensure t)
+** Programming
+*** fpp
+#+BEGIN_SRC emacs-lisp :tangle no
+  (add-to-list 'load-path "/home/tim/.emacs.d/fpp-mode.el")
+  (require 'fpp-mode)
 #+END_SRC
-** auctex
+*** elpy
 #+BEGIN_SRC emacs-lisp
-  (setq TeX-auto-save t)
-  (setq TeX-parse-self t)
-  ;; (setq-default TeX-master nil) ; prompt for master file, useful for multi-documents
-  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-  (setq reftex-plug-into-AUCTeX t)
-  (setq TeX-electric-sub-and-superscript t)
-  (add-hook 'LaTeX-mode-hook 'visual-line-mode)
-  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-  (setq TeX-PDF-mode t)
-
-  ;; see https://superuser.com/a/902764
-  ;; (TeX-global-PDF-mode t)
-  (setq latex-run-command "pdflatex")
+  ;; (use-package elpy-mode
+  ;;   ;; :ensure t
+  ;;   :init (with-eval-after-load 'python (elpy-enable))
+  ;;   :commands elpy-enable)
 #+END_SRC
-** mingus
-#+BEGIN_SRC emacs-lisp
-  (use-package mingus
-    :ensure t
-    :config
-    ;; (add-to-list 'ivy-completing-read-handlers-alist '(mingus-query . nil))
-    :bind
-    ("s-m b" . mingus-browse)
-    ("s-m p" . mingus))
+*** sml-mode
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package sml-mode
+    :ensure t)
 #+END_SRC
-** emms
-#+BEGIN_SRC emacs-lisp
-  (use-package emms
-    :ensure t
-    :config
-      (require 'emms-setup)
-      (require 'emms-player-mpd)
-      (emms-all) ; don't change this to values you see on stackoverflow questions if you expect emms to work
-      (setq emms-seek-seconds 5)
-      (setq emms-player-list '(emms-player-mpd))
-      (setq emms-info-functions '(emms-info-mpd))
-      (setq emms-player-mpd-server-name "localhost")
-      (setq emms-player-mpd-server-port "6600"))
-      ;; ("s-m r" . emms-player-mpd-update-all-reset-cache)
-  (setq mpc-host "localhost:6600")
-
-  (defun mpd/update-database ()
-    "Updates the MPD database synchronously."
-    (interactive)
-    (call-process "mpc" nil nil nil "update")
-    (message "MPD Database Updated!"))
-  (global-set-key (kbd "s-m u") 'mpd/update-database)
-#+END_SRC
-** paredit
+*** paredit
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
     :ensure t
@@ -363,142 +347,11 @@ For auto-closing parentheses, etc.
   (setq paredit-space-for-delimiter-predicates
         '(no-space-between-@-open-paren))
 #+END_SRC
-** dmenu
-#+BEGIN_SRC emacs-lisp
-  (use-package dmenu
-    :ensure t
-    :bind
-    ("s-SPC" . 'dmenu))
-#+END_SRC
-** smart-tabs
-#+BEGIN_SRC emacs-lisp
-  (use-package smart-tabs-mode
-    :ensure t
-    :init
-    (setq smart-tabs-mode nil)
-    :config
-    (smart-tabs-insinuate 'c 'c++ 'python))
-#+END_SRC
-** ido-completig-read+
-#+BEGIN_SRC emacs-lisp
-  (use-package ido-completing-read+
-    :ensure t
-    :config
-    (ido-ubiquitous-mode 1))
-#+END_SRC
-** geiser
+*** geiser
 *Note*: Installing with use-package causes problems for me...
 The geiser commands will work immediately after installing but once I restart emacs they break. Attempting to start a geiser REPL at this point will throw an error: "required feature 'geiser-guile' was not provided".
 Just directly installing with melpa package-install seems to be working for now...
-** easy-kill
-#+BEGIN_SRC emacs-lisp
-  (use-package easy-kill
-    :ensure t
-    :config (global-set-key [remap kill-ring-save] 'easy-kill))
-#+END_SRC
-** expand-region
-#+BEGIN_SRC emacs-lisp
-  (use-package expand-region
-    :ensure t
-    :bind ("C-=" . 'er/expand-region))
-#+END_SRC
-** multiple-cursors
-#+BEGIN_SRC emacs-lisp
-    (use-package multiple-cursors
-      :ensure t
-      :bind
-      ("s-q" . mc/mark-next-like-this)
-      ("s-Q" . mc/unmark-next-like-this))
-#+END_SRC
-** flycheck
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :ensure t
-    :config
-    (add-hook 'prog-mode-hook 'flycheck-mode)
-    (with-eval-after-load 'flycheck
-      (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))) ; stop annoying "add comments!" warnings
-#+END_SRC
-** stumpwm-mode
-#+BEGIN_SRC emacs-lisp
-  (use-package stumpwm-mode
-    :ensure t)
-#+END_SRC
-** magit
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :ensure t)
-#+END_SRC
-** which-key
-#+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :ensure t
-    :init
-    (which-key-mode))
-#+END_SRC
-** beacon
-#+BEGIN_SRC emacs-lisp
-  (use-package beacon
-    :ensure t
-    :init
-    (beacon-mode 1))
-#+END_SRC
-** smex
-#+BEGIN_SRC emacs-lisp
-  (use-package smex
-    :ensure t
-    :init (smex-initialize)
-    :bind
-    ("M-x" . smex))
-#+END_SRC
-** org-bullets
-#+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
-    :ensure t
-    :config
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
-#+END_SRC
-** avy
-#+BEGIN_SRC emacs-lisp
-  (use-package avy
-    :ensure t
-    :init
-    (setq avy-background t)
-    :bind
-    ("s-f" . avy-goto-word-1)
-    ("s-F" . avy-goto-char))
-#+END_SRC
-** rainbow
-#+BEGIN_SRC emacs-lisp
-  (use-package rainbow-mode
-    :ensure t
-    :init (add-hook 'prog-mode-hook 'rainbow-mode))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package rainbow-delimiters
-  ;;   :ensure t
-  ;;   :init
-  ;;   (rainbow-delimiters-mode t)
-  ;;   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-  ;;   (add-hook 'geiser-repl-mode 'rainbow-delimiters-mode))
-#+END_SRC
-** sudo-edit
-#+BEGIN_SRC emacs-lisp
-  (use-package sudo-edit
-    :ensure t)
-#+END_SRC
-** dashboard
-#+BEGIN_SRC emacs-lisp
-  (use-package dashboard
-    :ensure t
-    :config
-    (dashboard-setup-startup-hook)
-    (setq
-     dashboard-items '((recents . 7)
-                       (projects . 7))
-     dashboard-banner-logo-title "Welcome to Emacs"))
-#+END_SRC
-** company
+*** company
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
@@ -513,15 +366,52 @@ Just directly installing with melpa package-install seems to be working for now.
       (define-key company-active-map (kbd "C-n") #'company-select-next)
       (define-key company-active-map (kbd "C-p") #'company-select-previous))
 #+END_SRC
-** modeline
-*** powerline
+*** flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :config
+    ;; (add-hook 'prog-mode-hook 'flycheck-mode)
+    (with-eval-after-load 'flycheck
+      (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))) ; stop annoying "add comments!" warnings
+#+END_SRC
+*** auctex
+#+BEGIN_SRC emacs-lisp
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  ;; (setq-default TeX-master nil) ; prompt for master file, useful for multi-documents
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  (setq reftex-plug-into-AUCTeX t)
+  (setq TeX-electric-sub-and-superscript t)
+  (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (setq TeX-PDF-mode t)
+
+  ;; see https://superuser.com/a/902764
+  ;; (TeX-global-PDF-mode t)
+  (setq latex-run-command "pdflatex")
+#+END_SRC
+** Visual
+*** dashboard
+#+BEGIN_SRC emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :config
+    (dashboard-setup-startup-hook)
+    (setq
+     dashboard-items '((recents . 7)
+                       (projects . 7))
+     dashboard-banner-logo-title "Welcome to Emacs"))
+#+END_SRC
+*** modeline
+**** powerline
 #+BEGIN_SRC emacs-lisp :tangle no
   (use-package powerline
     :ensure t
     :init
     (powerline-default-theme))
 #+END_SRC
-*** diminish
+**** diminish
 #+BEGIN_SRC emacs-lisp
   (use-package diminish
     :ensure t
@@ -541,98 +431,102 @@ Just directly installing with melpa package-install seems to be working for now.
             org-indent-mode
             eldoc-mode)))
 #+END_SRC
-** symon
+** Editing
+*** expand-region
 #+BEGIN_SRC emacs-lisp
-  (use-package symon
+  (use-package expand-region
     :ensure t
-    :bind
-    ("s-i" . symon-mode))
+    :bind ("C-=" . 'er/expand-region))
 #+END_SRC
-** popup-kill-ring
+*** avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :init
+    (setq avy-background t)
+    :bind
+    ("s-f" . avy-goto-word-1)
+    ("s-F" . avy-goto-char))
+#+END_SRC
+*** popup-kill-ring
 #+BEGIN_SRC emacs-lisp
   (use-package popup-kill-ring
     :ensure t
     :bind
     ("M-y" . popup-kill-ring))
 #+END_SRC
-** swiper
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package swiper
-    :ensure t
-    :bind
-    ("C-s" . swiper))
+*** sudo-edit
+#+BEGIN_SRC emacs-lisp
+  (use-package sudo-edit
+    :ensure t)
 #+END_SRC
-** projectile
+*** multiple-cursors
+#+BEGIN_SRC emacs-lisp
+    (use-package multiple-cursors
+      :ensure t
+      :bind
+      ("s-q" . mc/mark-next-like-this)
+      ("s-Q" . mc/unmark-next-like-this))
+#+END_SRC
+*** easy-kill
+#+BEGIN_SRC emacs-lisp
+  (use-package easy-kill
+    :ensure t
+    :config (global-set-key [remap kill-ring-save] 'easy-kill))
+#+END_SRC
+** Project
+*** magit
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t)
+#+END_SRC
+*** projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
     :init
     (projectile-mode 1))
 #+END_SRC
-* Packages (Unused)
-** spaceline
+** Interface
+*** which-key
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package spaceline
-  ;;   :ensure t
-  ;;   :config
-  ;;   (require 'spaceline-config)
-  ;;   (setq powerline-default-separator (quote arrow))
-  ;;   (spaceline-spacemacs-theme))
+  (use-package which-key
+    :ensure t
+    :init
+    (which-key-mode))
 #+END_SRC
-
-** slime
-I'll probably install with quicklisp in the future.
+*** ido-completig-read+
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package slime
-    ;; :ensure t)
-#+END_SRC
-This package is annoying me at the moment when typing in the REPL so I've disabled it.
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package slime-company
-    ;; :ensure t)
-
-  ;; (slime-setup '(slime-company))
-#+END_SRC
-** guix
-#+BEGIN_SRC emacs-lisp
-  (use-package guix
+  (use-package ido-completing-read+
     :ensure t
     :config
-    (setq global-guix-prettify-mode t))
+    (ido-ubiquitous-mode 1))
 #+END_SRC
-** hungry-delete
-Note: there is a package called hungry-delete that will automatically
-delete whitespace until it finds a non-whitespace character when
-you press backspace...
-** ido-vertical
+*** smex
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package ido-vertical-mode ; disabled b/c of performance with ido-ubiquitous
-  ;;   :ensure t
-  ;;   :init
-  ;;   (ido-vertical-mode 0)) 
-  ;; (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-#+END_SRC
-** treemacs
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package treemacs ; not using this right now
-  ;;   :ensure t
-  ;;   :bind
-  ;;   ("C-x \\" . 'treemacs-toggle))
-#+END_SRC
-** switch-window
-#+BEGIN_SRC emacs-lisp
-  (use-package switch-window ; don't need this now
+  (use-package smex
     :ensure t
-    :config
-    (setq
-     switch-window-input-style 'minibuffer
-     switch-window-increase 4
-     switch-window-threshold 2
-     switch-window-shortcut-style 'qwerty
-     switch-window-qwerty-shortcuts
-     '("a" "s" "d" "f" "j" "k" "l"))
+    :init (smex-initialize)
     :bind
-    ([remap other-window] . switch-window))
+    ("M-x" . smex))
+#+END_SRC
+** Application
+*** mingus
+#+BEGIN_SRC emacs-lisp
+  (use-package mingus
+    :ensure t
+    :config
+    ;; (add-to-list 'ivy-completing-read-handlers-alist '(mingus-query . nil))
+    :bind
+    ("s-m b" . mingus-browse)
+    ("s-m p" . mingus))
+#+END_SRC
+*** symon
+#+BEGIN_SRC emacs-lisp
+  (use-package symon
+    :ensure t
+    :bind
+    ("s-i" . symon-display))
 #+END_SRC
 * Terminal
 ** Set default shell: zsh
@@ -645,7 +539,6 @@ you press backspace...
   (ad-activate 'ansi-term)
   (ad-activate 'term)
 #+END_SRC
-
 * Org
 ** Publish
 #+BEGIN_SRC emacs-lisp
@@ -724,6 +617,8 @@ For some reason this setting not only does nothing but also throws an error at l
    '((lisp . t)
      (python . t)
      (gnuplot . t)
+     (emacs-lisp . t)
+     (scheme . t)
      ))
   (defun my-org-confirm-babel-evaluate (lang body)
     (and (not (string= lang "lisp"))
@@ -753,6 +648,21 @@ For some reason this setting not only does nothing but also throws an error at l
     (interactive "nPick a number for line spacing: ")
     (setq-local line-spacing num))
 #+END_SRC
+** Keys
+#+BEGIN SRC emacs-lisp
+(define-key org-mode-map (kbd "C-c SPC") 'org-table-blank-field)
+#+END_SRC
+** Tags
+#+BEGIN_SRC emacs-lisp
+  (setq org-tag-alist '(("personal" . ?p)
+                        ("social" . ?s)
+                        ("work" . ?w)
+                        ("study" . ?s)
+                        ("chores" . ?c)
+                        ("recreation" . ?r)
+                        ("meta" . ?m)
+                        ("buy" . ?b)))
+#+END_SRC
 * Slime
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "s-s") 'slime-selector)
@@ -763,12 +673,19 @@ For some reason this setting not only does nothing but also throws an error at l
 #+END_SRC
 
 For faster startup. SLIME manual 2.5.3.
-Use sbcl image.
+Use sbcl image by default. Invoke other lisp with M-- M-x slime. See 2.5.2.
 #+BEGIN_SRC emacs-lisp
-  (setq slime-lisp-implementations
-        `((sbcl ("sbcl" "--core" ,(expand-file-name "~/.emacs.d/sbcl.core-for-slime")))
-          (acl ("/home/tim/Code/allegro/acl10.1express/mlisp"))))
+    (setq slime-lisp-implementations
+          `((sbcl ("sbcl" "--core" ,(expand-file-name "~/.emacs.d/sbcl.core-for-slime")))
+            (acl ("/home/tim/Code/allegro/acl10.1express/mlisp"))
+            (cmucl ("cmucl"))
+  ))
 #+END_SRC
+
+#+RESULTS:
+| sbcl  | (sbcl --core /home/tim/.emacs.d/sbcl.core-for-slime) |
+| acl   | (/home/tim/Code/allegro/acl10.1express/mlisp)        |
+| cmucl | (cmucl)                                              |
 
 Local HyperSpec copy. Use w3m.
 #+BEGIN_SRC emacs-lisp
@@ -807,4 +724,151 @@ Chicken Scheme extension - broken
   ;; (define-key 'prolog-mode-map (kbd "C-x C-e") 'ediprolog-dwim)
 
   (setq prolog-electric-if-then-else-flag t)
+#+END_SRC
+* Package Archive (Unused)
+:PROPERTIES:
+:header-args:  :tangle no
+:END:
+** rainbow
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+    :ensure t
+    :init (add-hook 'prog-mode-hook 'rainbow-mode))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package rainbow-delimiters
+  ;;   :ensure t
+  ;;   :init
+  ;;   (rainbow-delimiters-mode t)
+  ;;   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+  ;;   (add-hook 'geiser-repl-mode 'rainbow-delimiters-mode))
+#+END_SRC
+** dmenu
+#+BEGIN_SRC emacs-lisp
+  (use-package dmenu
+    :ensure t
+    :bind
+    ("s-SPC" . 'dmenu))
+#+END_SRC
+** smart-tabs
+#+BEGIN_SRC emacs-lisp
+  (use-package smart-tabs-mode
+    :ensure t
+    :init
+    (setq smart-tabs-mode nil)
+    :config
+    (smart-tabs-insinuate 'c 'c++ 'python))
+#+END_SRC
+** stumpwm-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package stumpwm-mode
+    :ensure t)
+#+END_SRC
+** beacon
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :init
+    (beacon-mode 1))
+#+END_SRC
+** org-bullets
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+** swiper
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package swiper
+    :ensure t
+    :bind
+    ("C-s" . swiper))
+#+END_SRC
+** emms
+#+BEGIN_SRC emacs-lisp
+  (use-package emms
+    :ensure t
+    :config
+      (require 'emms-setup)
+      (require 'emms-player-mpd)
+      (emms-all) ; don't change this to values you see on stackoverflow questions if you expect emms to work
+      (setq emms-seek-seconds 5)
+      (setq emms-player-list '(emms-player-mpd))
+      (setq emms-info-functions '(emms-info-mpd))
+      (setq emms-player-mpd-server-name "localhost")
+      (setq emms-player-mpd-server-port "6600"))
+      ;; ("s-m r" . emms-player-mpd-update-all-reset-cache)
+  (setq mpc-host "localhost:6600")
+
+  (defun mpd/update-database ()
+    "Updates the MPD database synchronously."
+    (interactive)
+    (call-process "mpc" nil nil nil "update")
+    (message "MPD Database Updated!"))
+  (global-set-key (kbd "s-m u") 'mpd/update-database)
+#+END_SRC
+** spaceline
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package spaceline
+  ;;   :ensure t
+  ;;   :config
+  ;;   (require 'spaceline-config)
+  ;;   (setq powerline-default-separator (quote arrow))
+  ;;   (spaceline-spacemacs-theme))
+#+END_SRC
+
+** slime
+I'll probably install with quicklisp in the future.
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package slime
+    ;; :ensure t)
+#+END_SRC
+This package is annoying me at the moment when typing in the REPL so I've disabled it.
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package slime-company
+    ;; :ensure t)
+
+  ;; (slime-setup '(slime-company))
+#+END_SRC
+** guix
+#+BEGIN_SRC emacs-lisp
+  (use-package guix
+    :ensure t
+    :config
+    (setq global-guix-prettify-mode t))
+#+END_SRC
+** hungry-delete
+Note: there is a package called hungry-delete that will automatically
+delete whitespace until it finds a non-whitespace character when
+you press backspace...
+** ido-vertical
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package ido-vertical-mode ; disabled b/c of performance with ido-ubiquitous
+  ;;   :ensure t
+  ;;   :init
+  ;;   (ido-vertical-mode 0)) 
+  ;; (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+#+END_SRC
+** treemacs
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package treemacs ; not using this right now
+  ;;   :ensure t
+  ;;   :bind
+  ;;   ("C-x \\" . 'treemacs-toggle))
+#+END_SRC
+** switch-window
+#+BEGIN_SRC emacs-lisp
+  (use-package switch-window ; don't need this now
+    :ensure t
+    :config
+    (setq
+     switch-window-input-style 'minibuffer
+     switch-window-increase 4
+     switch-window-threshold 2
+     switch-window-shortcut-style 'qwerty
+     switch-window-qwerty-shortcuts
+     '("a" "s" "d" "f" "j" "k" "l"))
+    :bind
+    ([remap other-window] . switch-window))
 #+END_SRC
