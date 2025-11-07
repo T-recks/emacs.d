@@ -1,3 +1,34 @@
+;;; -*- lexical-binding: t -*-
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(eat elfeed gptel js2-mode magit markdown-mode markdown-preview-mode)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+(defun indent-whole-buffer ()
+  "Indent the entire buffer without affecting point or mark."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (indent-region (point-min) (point-max)))))
+
+(global-set-key (kbd "C-c i") 'indent-whole-buffer)
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+
+(setq org-startup-with-inline-images t)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((ditaa . t)))
+(setq org-ditaa-jar-path "/usr/share/java/ditaa/ditaa-0.11.jar") ; Update with the actual path
+
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
@@ -7,82 +38,89 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+(require 'use-package)
 
-;; Begin Source config.org
+(use-package gptel
+  :ensure t
+  :init
+  (message "gptel :init block executing")
+  :config
+  (message "gptel :config block executing")
+  (setq gptel-backend (gptel-make-anthropic "Claude"
+                        :stream t
+                        :key (getenv "ANTHROPIC_API_KEY")))
+  (setq gptel-model "claude-sonnet-4-20250514")
+  (setq gptel-use-markdown t)
+  (message "gptel backend configured: %s" gptel-backend)
+  ;; (setq gptel-default-mode 'org-mode)  ; Use org-mode for gptel buffers
+  :bind (:map gptel-mode-map
+              ("C-c C-n" . gptel-end-of-response)
+              ("C-c C-p" . gptel-beginning-of-response)))
 
-(org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
+;; (setq gptel-backends
+;;       '((default :name "Claude Chat"
+;;                  :provider anthropic
+;;                  :model "claude-sonnet-4-20250514"
+;; 		 :system "")
+;;         (swe     :name "Claude SWE"
+;;                  :provider anthropic
+;;                  :model "claude-opus-4-1-20250805"
+;;                  :system "You are an expert software engineering assistant. Help me with coding, debugging, and explaining technical concepts in detail.")))
 
-;; End Source config.org
+(use-package elfeed
+  :ensure t
+  :config
+  ;; Load feeds from private file
+  (setq elfeed-feeds-file "~/.emacs.d/elfeed-feeds.el")
+  (when (file-exists-p elfeed-feeds-file)
+    (load elfeed-feeds-file))
+  
+  ;; :bind ("C-x w" . elfeed)
+  )
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(TeX-engine 'xetex)
- '(TeX-view-program-selection
-   '(((output-dvi has-no-display-manager)
-      "dvi2tty")
-     ((output-dvi style-pstricks)
-      "dvips and gv")
-     (output-dvi "xdvi")
-     (output-pdf "Zathura")
-     (output-html "xdg-open")))
- '(ansi-term-color-vector
-   [term term-color-black term-color-red term-color-green term-color-yellow term-color-blue term-color-magenta term-color-cyan term-color-white] t)
- '(background-color "#111111")
- '(background-mode dark)
- '(beacon-color "#f2777a")
- '(browse-url-browser-function 'browse-url-firefox)
- '(company-quickhelp-color-background "#4F4F4F")
- '(company-quickhelp-color-foreground "#DCDCCC")
- '(cursor-color "#cccccc")
- '(custom-enabled-themes (list (intern (getenv "THEME"))))
- '(custom-safe-themes
-   '("4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "d91ef4e714f05fff2070da7ca452980999f5361209e679ee988e3c432df24347" "ecba61c2239fbef776a72b65295b88e5534e458dfe3e6d7d9f9cb353448a569e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "42b9d85321f5a152a6aef0cc8173e701f572175d6711361955ecfb4943fe93af" "3fa81193ab414a4d54cde427c2662337c2cab5dd4eb17ffff0d90bca97581eb6" default))
- '(desktop-path '("~"))
- '(desktop-save-mode t)
- '(diary-entry-marker 'font-lock-variable-name-face)
- '(emms-mode-line-icon-image-cache
-   '(image :type xpm :ascent center :data "/* XPM */\12static char *note[] = {\12/* width height num_colors chars_per_pixel */\12\"    10   11        2            1\",\12/* colors */\12\". c #1fb3b3\",\12\"# c None s None\",\12/* pixels */\12\"###...####\",\12\"###.#...##\",\12\"###.###...\",\12\"###.#####.\",\12\"###.#####.\",\12\"#...#####.\",\12\"....#####.\",\12\"#..######.\",\12\"#######...\",\12\"######....\",\12\"#######..#\" };") t)
- '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
- '(foreground-color "#cccccc")
- '(frame-background-mode 'dark)
- '(geiser-active-implementations '(guile racket chicken chez mit))
- '(geiser-default-implementation '\'guile)
- '(gnus-logo-colors '("#528d8d" "#c0c0c0") t)
- '(gnus-mode-line-image-cache
-   '(image :type xpm :ascent center :data "/* XPM */\12static char *gnus-pointer[] = {\12/* width height num_colors chars_per_pixel */\12\"    18    13        2            1\",\12/* colors */\12\". c #1fb3b3\",\12\"# c None s None\",\12/* pixels */\12\"##################\",\12\"######..##..######\",\12\"#####........#####\",\12\"#.##.##..##...####\",\12\"#...####.###...##.\",\12\"#..###.######.....\",\12\"#####.########...#\",\12\"###########.######\",\12\"####.###.#..######\",\12\"######..###.######\",\12\"###....####.######\",\12\"###..######.######\",\12\"###########.######\" };") t)
- '(hl-paren-background-colors '("#e8fce8" "#c1e7f8" "#f8e8e8"))
- '(hl-sexp-background-color "#efebe9")
- '(irony-supported-major-modes '(c++-mode c-mode objc-mode arduino-mode))
- '(jdee-db-active-breakpoint-face-colors (cons "#000000" "#fd971f"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#000000" "#b6e63e"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#000000" "#525254"))
- '(magit-diff-use-overlays nil)
- '(notmuch-search-line-faces
-   '(("unread" :foreground "#aeee00")
-     ("flagged" :foreground "#0a9dff")
-     ("deleted" :foreground "#ff2c4b" :bold t)))
- '(org-src-tab-acts-natively t)
- '(package-selected-packages
-   '(geiser-racket org-journal fpp-mode tuareg oberon slime forth-mode flymake-python-pyflakes elpy markdown-mode sml-mode mentor php-mode arduino-mode ediprolog ivy-youtube auctex easy-kill rtags irony-eldoc irony elmacro gnuplot mingus corral simple-mpc emms arch-packer stumpwm-mode cider md4rd paredit w3m powerline guix ido-completing-read+ ido-reading-complete+ expand-region multiple-cursors solarized-theme nord-theme gruvbox-theme plan9-theme flycheck smart-tabs-mode noctilux-theme color-theme magit projectile linum-relative popup-kill-ring symon symbon diminish company dashboard rainbow-delimiters sudo-edit rainbow-mode avy smex ido-vertical-mode which-key use-package))
- '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
- '(rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face t)
- '(rainbow-identifiers-cie-l*a*b*-color-count 1024 t)
- '(rainbow-identifiers-cie-l*a*b*-lightness 80 t)
- '(rainbow-identifiers-cie-l*a*b*-saturation 25 t)
- '(sml/active-background-color "#98ece8")
- '(sml/active-foreground-color "#424242")
- '(sml/inactive-background-color "#4fa8a8")
- '(sml/inactive-foreground-color "#424242")
- '(tab-width 4))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
+(use-package markdown-mode
+  :ensure t
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "markdown"))
+
+(use-package markdown-preview-mode
+  :ensure t
+  :after markdown-mode
+  :config
+  ;; Use your preferred browser for preview
+  (setq markdown-preview-javascript
+        (list "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"))
+  
+  ;; Optional: Auto-update preview on save
+  (setq markdown-preview-auto-open t)
+  
+  ;; Keybinding for quick preview
+  :bind (:map markdown-mode-map
+              ("C-c C-c p" . markdown-preview-mode)))
+
+(use-package js2-mode
+  :ensure t
+  :mode "\\.js\\'"  ; Use for all .js files
+  :config
+  (setq js2-basic-offset 2)  ; 2-space indentation
+  (setq js2-bounce-indent-p nil))  ; Don't auto-adjust indentation
+(put 'list-timers 'disabled nil)
+
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status))
+
+(use-package eat
+  :ensure t
+  :config
+  ;; For `eat-eshell-mode'
+  (add-hook 'eshell-load-hook #'eat-eshell-mode)
+  
+  ;; For `eat-eshell-visual-command-mode'
+  (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
+  
+  :bind
+  ("C-c t" . eat)  ; Launch terminal
+  )
