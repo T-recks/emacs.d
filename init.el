@@ -5,7 +5,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(eat elfeed gptel js2-mode magit markdown-mode markdown-preview-mode)))
+   '(bazel eat elfeed gptel magit markdown-mode
+	   markdown-preview-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -100,13 +101,13 @@
   :bind (:map markdown-mode-map
               ("C-c C-c p" . markdown-preview-mode)))
 
-(use-package js2-mode
-  :ensure t
-  :mode "\\.js\\'"  ; Use for all .js files
-  :config
-  (setq js2-basic-offset 2)  ; 2-space indentation
-  (setq js2-bounce-indent-p nil))  ; Don't auto-adjust indentation
-(put 'list-timers 'disabled nil)
+;;(use-package js2-mode
+;;  :ensure t
+;;  :mode "\\.js\\'"  ; Use for all .js files
+;;  :config
+;;  (setq js2-basic-offset 2)  ; 2-space indentation
+;;  (setq js2-bounce-indent-p nil))  ; Don't auto-adjust indentation
+;;(put 'list-timers 'disabled nil)
 
 (use-package magit
   :ensure t
@@ -123,4 +124,10 @@
   
   :bind
   ("C-c t" . eat)  ; Launch terminal
+  )
+
+(use-package bazel
+  :ensure t
+  ;; :hook (bazel-mode . bazel-mode-setup)
+  ;; :mode ("\\.bzl\\'" "BUILD\\'" "WORKSPACE\\'")
   )
