@@ -58,16 +58,6 @@
               ("C-c C-n" . gptel-end-of-response)
               ("C-c C-p" . gptel-beginning-of-response)))
 
-;; (setq gptel-backends
-;;       '((default :name "Claude Chat"
-;;                  :provider anthropic
-;;                  :model "claude-sonnet-4-20250514"
-;; 		 :system "")
-;;         (swe     :name "Claude SWE"
-;;                  :provider anthropic
-;;                  :model "claude-opus-4-1-20250805"
-;;                  :system "You are an expert software engineering assistant. Help me with coding, debugging, and explaining technical concepts in detail.")))
-
 (use-package elfeed
   :ensure t
   :config
@@ -101,14 +91,6 @@
   :bind (:map markdown-mode-map
               ("C-c C-c p" . markdown-preview-mode)))
 
-;;(use-package js2-mode
-;;  :ensure t
-;;  :mode "\\.js\\'"  ; Use for all .js files
-;;  :config
-;;  (setq js2-basic-offset 2)  ; 2-space indentation
-;;  (setq js2-bounce-indent-p nil))  ; Don't auto-adjust indentation
-;;(put 'list-timers 'disabled nil)
-
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
@@ -127,7 +109,4 @@
   )
 
 (use-package bazel
-  :ensure t
-  ;; :hook (bazel-mode . bazel-mode-setup)
-  ;; :mode ("\\.bzl\\'" "BUILD\\'" "WORKSPACE\\'")
-  )
+  :ensure t)
